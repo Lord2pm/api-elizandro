@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_migrate import Migrate
 from flask_restx import Api
 from flask_jwt_extended import JWTManager
@@ -29,6 +29,12 @@ JWTManager(app)
 CORS(app)
 ma = Migrate(app, db)
 send_email.mail.init_app(app)
+
+
+@app.route("/teste")
+def index():
+    return jsonify({"msg": "Olá mundo!"})
+
 
 api.add_namespace(cliente_controllers.api, path="/auth/clientes")
 api.add_namespace(venda_controllers.api, path="/vendas")
