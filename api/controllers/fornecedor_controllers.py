@@ -29,7 +29,7 @@ class FornecedorCreateList(Resource):
 
         if fornecedor:
             email_send(
-                f"A sua conta foi criada com sucesso. Use o botão abaixo para activar.\n\nhttp://localhost/auth/active-account/{fornecedor.email}",
+                f"A sua conta foi criada com sucesso. Use o botão abaixo para activar.\n\nhttp://localhost/auth/fornecedores/active-account/{fornecedor.email}",
                 fornecedor.email,
                 "Conta criada com sucesso",
             )

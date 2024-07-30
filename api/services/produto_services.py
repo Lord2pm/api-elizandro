@@ -31,15 +31,18 @@ def get_produto_by_id(id):
 
 
 def create_produto(data):
-    produto = Produto(
-        nome=data["nome"],
-        preco=data["preco"],
-        qtd_stock=data.get("qtd_stock"),
-        vendedor_id=data["vendedor_id"],
-    )
-    db.session.add(produto)
-    db.session.commit()
-    return produto, 201
+    try:
+        produto = Produto(
+            nome=data["nome"],
+            preco=data["preco"],
+            qtd_stock=data.get("qtd_stock"),
+            vendedor_id=data["vendedor_id"],
+        )
+        db.session.add(produto)
+        db.session.commit()
+        return produto, 201
+    except KeyError:
+        return abort(400, "Verifique os campos exigidos no corpo da requisição e tente novamente")
 
 
 def update_produto(id, data):

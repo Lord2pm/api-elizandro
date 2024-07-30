@@ -29,7 +29,7 @@ class ClienteCreateList(Resource):
 
         if cliente:
             email_send(
-                f"A sua conta foi criada com sucesso. Use o botão abaixo para activar.\n\nhttp://localhost/auth/active-account/{cliente.email}",
+                f"A sua conta foi criada com sucesso. Use o botão abaixo para activar.\n\nhttp://localhost/auth/clientes/active-account/{cliente.email}",
                 cliente.email,
                 "Conta criada com sucesso",
             )

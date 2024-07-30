@@ -1,4 +1,4 @@
-from flask import abort, request
+from flask import abort
 
 from api.models.models import Venda, Produto, db
 
@@ -11,19 +11,25 @@ def create_venda(data):
     produto = Produto.query.filter_by(id=data["produto_id"]).first()
 
     if produto:
-        if produto.qtd_stock >= data["quantidade"]:
-            produto.qtd_stock -= data["quantidade"]
-            venda = Venda(
-                cliente_id=data["cliente_id"],
-                produto_id=data["produto_id"],
-                fornecedor_id=data["fornecedor_id"],
-                quantidade=data["quantidade"],
-            )
-            db.session.add(venda)
-            db.session.commit()
-            return venda, 201
+        try:
+            if produto.qtd_stock >= data["quantidade"]:
+                produto.qtd_stock -= data["quantidade"]
+                venda = Venda(
+                    cliente_id=data["cliente_id"],
+                    produto_id=data["produto_id"],
+                    fornecedor_id=data["fornecedor_id"],
+                    quantidade=data["quantidade"],
+                )
+                db.session.add(venda)
+                db.session.commit()
+                return venda, 201
 
-        return abort(400, "Quantidade em stock inferior a pretendida")
+            return abort(400, "Quantidade em stock inferior a pretendida")
+        except KeyError:
+            return abort(
+                400,
+                "Verifique os campos exigidos no corpo da requisição e tente novamente",
+            )
 
     return abort(400, "Produto não encontrado")
 

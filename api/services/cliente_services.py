@@ -1,3 +1,5 @@
+from flask import abort
+
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -12,17 +14,23 @@ def create_cliente(data: dict) -> Cliente | bool:
     old_cliente = get_cliente_by_email(data["email"])
 
     if not old_cliente:
-        new_cliente = Cliente(
-            email=data["email"],
-            nome_completo=data["nome_completo"],
-            telefone=data["telefone"],
-            senha=data["senha"],
-            endereco=data.get("endereco"),
-            imagem=data.get("imagem"),
-        )
-        db.session.add(new_cliente)
-        db.session.commit()
-        return new_cliente
+        try:
+            new_cliente = Cliente(
+                email=data["email"],
+                nome_completo=data["nome_completo"],
+                telefone=data["telefone"],
+                senha=data["senha"],
+                endereco=data.get("endereco"),
+                imagem=data.get("imagem"),
+            )
+            db.session.add(new_cliente)
+            db.session.commit()
+            return new_cliente
+        except KeyError:
+            return abort(
+                400,
+                "Verifique os campos exigidos no corpo da requisição e tente novamente",
+            )
 
     return False
 
