@@ -76,3 +76,7 @@ def cliente_password_recovery(data: dict) -> Cliente | bool:
     cliente.senha = cliente.hash_senha(senha)
     db.session.commit()
     return cliente, senha
+
+
+def get_all_compras(email: str):
+    return Cliente.query.filter_by(email=email).first().vendas

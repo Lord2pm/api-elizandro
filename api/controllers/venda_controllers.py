@@ -3,6 +3,8 @@ from flask_restx import Resource
 from flask_jwt_extended import jwt_required
 
 from api.schemas.venda_schemas import VendasDto
+from api.schemas.produto_schemas import ProdutoDto
+from api.schemas.cliente_schemas import ClienteDto
 from api.services.venda_services import (
     get_all_vendas,
     create_venda,
@@ -10,11 +12,21 @@ from api.services.venda_services import (
     update_venda,
     get_venda,
 )
+from api.services.cliente_services import get_all_compras
+from api.services.fornecedor_services import (
+    get_all_compras as get_all_compras_fornecedor,
+)
 
 
 vendas_dto = VendasDto()
 api = vendas_dto.api
 venda_model = vendas_dto.venda_model
+
+produtos_dto = ProdutoDto()
+produto_model = produtos_dto.produto_model
+
+clientes_dto = ClienteDto()
+clientes_model = clientes_dto.cliente
 
 
 @api.route("/")
@@ -51,3 +63,21 @@ class Venda(Resource):
     @jwt_required()
     def delete(self, id):
         return delete_venda(id)
+
+
+@api.route("/fornecedor/<email>")
+@api.response(404, "Fornecedor not found")
+class VendasByFornecedor(Resource):
+    @api.marshal_list_with(produto_model)
+    @jwt_required()
+    def get(self, email):
+        return get_all_compras_fornecedor(email)
+
+
+@api.route("/cliente/<email>")
+@api.response(404, "Fornecedor not found")
+class VendasByCliente(Resource):
+    @api.marshal_list_with(clientes_model)
+    @jwt_required()
+    def get(self, email):
+        return get_all_compras(email)

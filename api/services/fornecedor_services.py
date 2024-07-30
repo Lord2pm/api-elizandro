@@ -69,3 +69,7 @@ def fornecedor_password_recovery(data: dict) -> Fornecedor | bool:
     fornecedor.senha = fornecedor.hash_senha(senha)
     db.session.commit()
     return fornecedor, senha
+
+
+def get_all_compras(email: str):
+    return Fornecedor.query.filter_by(email=email).first().vendas
