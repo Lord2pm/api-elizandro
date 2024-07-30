@@ -21,13 +21,13 @@ produto_model = produto_dto.produto_model
 @api.route("/")
 class ProdutoList(Resource):
     @api.marshal_list_with(produto_model)
-    # jwt_required()
+    @jwt_required()
     def get(self):
         return get_all_produtos()
 
     @api.expect(produto_model)
     @api.marshal_with(produto_model, code=201)
-    # @jwt_required()
+    @jwt_required()
     def post(self):
         data = request.json
         return create_produto(data)
@@ -58,6 +58,6 @@ class Produto(Resource):
 @api.response(404, "Fornecedor not found")
 class ProdutosByFornecedor(Resource):
     @api.marshal_list_with(produto_model)
-    # @jwt_required()
+    @jwt_required()
     def get(self, email):
         return get_produtos_by_fornecedor_email(email)
