@@ -1,5 +1,6 @@
+from flask import abort, request
+
 from api.models.models import Venda, Produto, db
-from flask import abort
 
 
 def get_all_vendas():

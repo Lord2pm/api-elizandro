@@ -1,5 +1,5 @@
 import os
-from flask import url_for
+from flask import url_for, abort
 from werkzeug.utils import secure_filename
 
 from api.models.models import Produto, Fornecedor, db
@@ -60,6 +60,6 @@ def delete_produto(id):
 
 def get_produtos_by_fornecedor_email(email):
     fornecedor = Fornecedor.query.filter_by(email=email).first()
-    if not fornecedor:
-        return {"message": "Fornecedor não encontrado"}, 404
-    return fornecedor.produtos
+    if fornecedor:
+        return fornecedor.produtos
+    return abort(404, "Fornecedor não encontrado")
