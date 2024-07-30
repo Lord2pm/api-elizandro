@@ -22,12 +22,6 @@ vendas_dto = VendasDto()
 api = vendas_dto.api
 venda_model = vendas_dto.venda_model
 
-produtos_dto = ProdutoDto()
-produto_model = produtos_dto.produto_model
-
-clientes_dto = ClienteDto()
-clientes_model = clientes_dto.cliente
-
 
 @api.route("/")
 class VendaList(Resource):
@@ -68,7 +62,7 @@ class Venda(Resource):
 @api.route("/fornecedor/<email>")
 @api.response(404, "Fornecedor not found")
 class VendasByFornecedor(Resource):
-    @api.marshal_list_with(produto_model)
+    @api.marshal_list_with(venda_model)
     @jwt_required()
     def get(self, email):
         return get_all_compras_fornecedor(email)
@@ -77,7 +71,7 @@ class VendasByFornecedor(Resource):
 @api.route("/cliente/<email>")
 @api.response(404, "Fornecedor not found")
 class VendasByCliente(Resource):
-    @api.marshal_list_with(clientes_model)
+    @api.marshal_list_with(venda_model)
     @jwt_required()
     def get(self, email):
         return get_all_compras(email)
