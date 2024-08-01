@@ -21,6 +21,22 @@ class FornecedorDto:
         },
     )
 
+    fornecedor_produto = api.model(
+        "FornecedorProduto",
+        {
+            "id": fields.Integer(readOnly=True, description="ID do fornecedor"),
+            "email": fields.String(required=True, description="E-mail do fornecedor"),
+            "nome_completo": fields.String(
+                required=True, description="Nome do fornecedor"
+            ),
+            "telefone": fields.String(
+                required=True, description="Número de telefone do fornecedor"
+            ),
+            "loja": fields.String(description="Nome da loja do fornecedor"),
+            "endereco": fields.String(description="Endereço do fornecedor"),
+        },
+    )
+
     fornecedor_login = api.model(
         "FornecedorLogin",
         {

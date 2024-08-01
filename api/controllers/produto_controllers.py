@@ -19,6 +19,7 @@ from api.services.produto_services import (
 produto_dto = ProdutoDto()
 api = produto_dto.api
 produto_model = produto_dto.produto_model
+produto_create = produto_dto.produto_create
 
 
 @api.route("/")
@@ -28,7 +29,7 @@ class ProdutoList(Resource):
     def get(self):
         return get_all_produtos()
 
-    @api.expect(produto_model)
+    @api.expect(produto_create)
     @api.marshal_with(produto_model, code=201)
     @jwt_required()
     def post(self):
@@ -44,7 +45,7 @@ class Produto(Resource):
     def get(self, id):
         return get_produto_by_id(id)
 
-    @api.expect(produto_model)
+    @api.expect(produto_create)
     @api.marshal_with(produto_model)
     @jwt_required()
     def put(self, id):

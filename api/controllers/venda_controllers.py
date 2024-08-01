@@ -21,6 +21,7 @@ from api.services.fornecedor_services import (
 vendas_dto = VendasDto()
 api = vendas_dto.api
 venda_model = vendas_dto.venda_model
+venda_create = vendas_dto.venda_create
 
 
 @api.route("/")
@@ -30,7 +31,7 @@ class VendaList(Resource):
     def get(self):
         return get_all_vendas()
 
-    @api.expect(venda_model)
+    @api.expect(venda_create)
     @api.marshal_with(venda_model, code=201)
     @jwt_required()
     def post(self):
@@ -46,7 +47,7 @@ class Venda(Resource):
     def get(self, id):
         return get_venda(id)
 
-    @api.expect(venda_model)
+    @api.expect(venda_create)
     @api.marshal_with(venda_model)
     @jwt_required()
     def put(self, id):
