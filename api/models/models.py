@@ -94,6 +94,7 @@ class Produto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
     preco = db.Column(db.Float, nullable=False)
+    categoria = db.Column(db.String, nullable=False)
     qtd_stock = db.Column(db.Integer)
     imagem = db.Column(db.String(200), nullable=True)
     vendedor_id = db.Column(db.Integer, db.ForeignKey("fornecedor.id"), nullable=False)

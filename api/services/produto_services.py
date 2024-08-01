@@ -33,8 +33,9 @@ def get_produto_by_id(id):
 def create_produto(data):
     try:
         produto = Produto(
-            nome=data["nome"],
+            nome=data["nome"].title().strip(),
             preco=data["preco"],
+            categoria=data["categoria"].title().strip(),
             qtd_stock=data.get("qtd_stock"),
             vendedor_id=data["vendedor_id"],
         )
@@ -42,13 +43,16 @@ def create_produto(data):
         db.session.commit()
         return produto, 201
     except KeyError:
-        return abort(400, "Verifique os campos exigidos no corpo da requisição e tente novamente")
+        return abort(
+            400, "Verifique os campos exigidos no corpo da requisição e tente novamente"
+        )
 
 
 def update_produto(id, data):
     produto = get_produto_by_id(id)
     produto.nome = data.get("nome", produto.nome)
     produto.preco = data.get("preco", produto.preco)
+    produto.categoria = data.get("categoria", produto.categoria)
     produto.qtd_stock = data.get("qtd_stock", produto.qtd_stock)
     db.session.commit()
     return produto
@@ -66,3 +70,10 @@ def get_produtos_by_fornecedor_email(email):
     if fornecedor:
         return fornecedor.produtos
     return abort(404, "Fornecedor não encontrado")
+
+
+def get_produtos_by_categoria(categoria: str):
+    produtos = Produto.query.filter_by(categoria=categoria.title().strip()).all()
+    if produtos:
+        return produtos
+    return abort(404, "Nenhum produto encontrado")

@@ -10,6 +10,9 @@ class ProdutoDto:
             "id": fields.Integer(readOnly=True, description="ID do produto"),
             "nome": fields.String(required=True, description="Nome do produto"),
             "preco": fields.Float(required=True, description="Preço do produto"),
+            "categoria": fields.String(
+                required=True, description="Categoria do produto"
+            ),
             "qtd_stock": fields.Integer(
                 required=False, description="Quantidade em estoque"
             ),

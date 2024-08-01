@@ -10,6 +10,7 @@ from api.services.produto_services import (
     update_produto,
     delete_produto,
     get_produtos_by_fornecedor_email,
+    get_produtos_by_categoria,
 )
 
 
@@ -61,3 +62,12 @@ class ProdutosByFornecedor(Resource):
     @jwt_required()
     def get(self, email):
         return get_produtos_by_fornecedor_email(email)
+
+
+@api.route("/<categoria>")
+@api.response(404, "Categoria not found")
+class ProdutosByCategoria(Resource):
+    @api.marshal_list_with(produto_model)
+    @jwt_required()
+    def get(self, categoria):
+        return get_produtos_by_categoria(categoria)
