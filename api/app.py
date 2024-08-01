@@ -23,6 +23,7 @@ api = Api(
     title="API do Elizandro",
     version="1.0",
     description="API para gerenciar as operações de um App de venda de produtos agrícolas",
+    prefix="/api",
 )
 db.init_app(app)
 JWTManager(app)
