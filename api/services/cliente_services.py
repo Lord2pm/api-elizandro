@@ -1,4 +1,5 @@
 from flask import abort
+import validators
 
 from flask_jwt_extended import (
     create_access_token,
@@ -11,6 +12,9 @@ from api.utils.generate_password import generate_password
 
 
 def create_cliente(data: dict) -> Cliente | bool:
+    if not validators.email(data["email"]):
+        return abort(400, "E-mail inválido")
+    
     old_cliente = get_cliente_by_email(data["email"])
 
     if not old_cliente:

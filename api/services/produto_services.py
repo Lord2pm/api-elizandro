@@ -1,12 +1,15 @@
-import os
-from flask import url_for, abort
+from flask import abort
 from werkzeug.utils import secure_filename
+from werkzeug.utils import secure_filename
+from datetime import datetime
+from pathlib import Path
 
 from api.models.models import Produto, Fornecedor, db
 
 
-UPLOAD_FOLDER = "img/"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
+BASE_DIR = Path(__file__).resolve().parent
+UPLOAD_FOLDER = BASE_DIR / "../../uploads" / "img"
 
 
 def allowed_file(filename):
@@ -14,12 +17,18 @@ def allowed_file(filename):
 
 
 def save_file(file):
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(filepath)
-        return url_for("static", filename=filename, _external=True)
-    return None
+    if file.filename == "":
+        raise ValueError("Nenhum arquivo selecionado")
+    if not allowed_file(file.filename):
+        raise ValueError("Extensão de arquivo não permitida")
+
+    filename = secure_filename(file.filename)
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    new_filename = f"{timestamp}_{filename}"
+    upload_folder = UPLOAD_FOLDER
+    file_path = upload_folder / new_filename
+    file.save(file_path)
+    return new_filename
 
 
 def get_all_produtos():

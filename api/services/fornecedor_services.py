@@ -1,3 +1,6 @@
+from flask import abort
+import validators
+
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -9,21 +12,30 @@ from api.models.models import Fornecedor, db
 
 
 def create_fornecedor(data: dict) -> Fornecedor | bool:
+    if not validators.email(data["email"]):
+        return abort(400, "E-mail inválido")
+
     old_fornecedor = get_fornecedor_by_email(data["email"])
 
     if not old_fornecedor:
-        new_fornecedor = Fornecedor(
-            email=data["email"],
-            nome_completo=data["nome_completo"],
-            telefone=data["telefone"],
-            senha=data["senha"],
-            loja=data.get("loja"),
-            endereco=data.get("endereco"),
-            imagem=data.get("imagem"),
-        )
-        db.session.add(new_fornecedor)
-        db.session.commit()
-        return new_fornecedor
+        try:
+            new_fornecedor = Fornecedor(
+                email=data["email"],
+                nome_completo=data["nome_completo"],
+                telefone=data["telefone"],
+                senha=data["senha"],
+                loja=data.get("loja"),
+                endereco=data.get("endereco"),
+                imagem=data.get("imagem"),
+            )
+            db.session.add(new_fornecedor)
+            db.session.commit()
+            return new_fornecedor
+        except KeyError:
+            return abort(
+                400,
+                "Verifique os campos exigidos no corpo da requisição e tente novamente",
+            )
 
     return False
 

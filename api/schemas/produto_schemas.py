@@ -13,6 +13,7 @@ class ProdutoDto:
             "categoria": fields.String(
                 required=True, description="Categoria do produto"
             ),
+            "imagem": fields.String(required=False, description="Foto do produto"),
             "qtd_stock": fields.Integer(
                 required=False, description="Quantidade em estoque"
             ),

@@ -1,8 +1,9 @@
-from flask import request
+from flask import request, abort
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required
 
 from api.schemas.produto_schemas import ProdutoDto
+from api.models.models import db
 from api.services.produto_services import (
     get_all_produtos,
     get_produto_by_id,
@@ -11,6 +12,7 @@ from api.services.produto_services import (
     delete_produto,
     get_produtos_by_fornecedor_email,
     get_produtos_by_categoria,
+    save_file,
 )
 
 
@@ -71,3 +73,20 @@ class ProdutosByCategoria(Resource):
     @jwt_required()
     def get(self, categoria):
         return get_produtos_by_categoria(categoria)
+
+
+@api.route("/upload-img/<id_produto>")
+@api.response(200, "Imagem carregada com sucesso")
+class UploadProdutoImagem(Resource):
+    def post(self, id_produto):
+        produto = get_produto_by_id(int(id_produto))
+        if "file" not in request.files:
+            return abort(400, "Nenhum arquivo enviado")
+        file = request.files["file"]
+        try:
+            filename = save_file(file)
+            produto.imagem = filename
+            db.session.commit()
+            return {"message": "Arquivo enviado com sucesso", "filename": filename}, 200
+        except ValueError as e:
+            return abort(400, str(e))
