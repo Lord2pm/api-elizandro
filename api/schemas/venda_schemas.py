@@ -1,6 +1,5 @@
 from flask_restx import Namespace, fields
 
-from api.schemas.fornecedor_schemas import FornecedorDto
 from api.schemas.cliente_schemas import ClienteDto
 from api.schemas.produto_schemas import ProdutoDto
 

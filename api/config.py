@@ -6,7 +6,6 @@ class Config:
         "DATABASE_URL",
         "sqlite:///db.db",
     )
-    # mysql+pymysql://root:EzOweSDyuxPGRixKQKQciKjTRVFEADdN@roundhouse.proxy.rlwy.net:13975/railway
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     MAIL_SERVER = "smtp.gmail.com"

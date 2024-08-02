@@ -3,8 +3,6 @@ from flask_restx import Resource
 from flask_jwt_extended import jwt_required
 
 from api.schemas.venda_schemas import VendasDto
-from api.schemas.produto_schemas import ProdutoDto
-from api.schemas.cliente_schemas import ClienteDto
 from api.services.venda_services import (
     get_all_vendas,
     create_venda,
