@@ -18,6 +18,12 @@ class FornecedorDto:
             "senha": fields.String(required=True, description="Senha do fornecedor"),
             "loja": fields.String(description="Nome da loja do fornecedor"),
             "endereco": fields.String(description="Endereço do fornecedor"),
+            "subscription_status": fields.String(
+                description="Status da subscrição do fornecedor"
+            ),
+            "subscription_end_date": fields.DateTime(
+                description="Data do fim da subscrição do fornecedor"
+            ),
         },
     )
 
@@ -34,6 +40,12 @@ class FornecedorDto:
             ),
             "loja": fields.String(description="Nome da loja do fornecedor"),
             "endereco": fields.String(description="Endereço do fornecedor"),
+            "subscription_status": fields.String(
+                description="Status da subscrição do fornecedor"
+            ),
+            "subscription_date": fields.String(
+                description="Data do fim da subscrição do fornecedor"
+            ),
         },
     )
 

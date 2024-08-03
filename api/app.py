@@ -11,6 +11,7 @@ from api.controllers import (
     fornecedor_controllers,
     produto_controllers,
     venda_controllers,
+    admin_controllers
 )
 from api.utils import send_email
 
@@ -35,6 +36,7 @@ api.add_namespace(cliente_controllers.api, path="/auth/clientes")
 api.add_namespace(venda_controllers.api, path="/vendas")
 api.add_namespace(produto_controllers.api, path="/produtos")
 api.add_namespace(fornecedor_controllers.api, path="/auth/fornecedores")
+api.add_namespace(admin_controllers.api, path="/admin")
 
 
 if __name__ == "__main__":

@@ -8,13 +8,14 @@ from flask_jwt_extended import (
 )
 
 from api.models.models import Cliente, db
+from api.utils.calculate_subscription_time import calculate_subscrption_time
 from api.utils.generate_password import generate_password
 
 
 def create_cliente(data: dict) -> Cliente | bool:
     if not validators.email(data["email"]):
         return abort(400, "E-mail inválido")
-    
+
     old_cliente = get_cliente_by_email(data["email"])
 
     if not old_cliente:
@@ -49,7 +50,12 @@ def cliente_login(data: dict) -> bool | dict:
     cliente = get_cliente_by_email(email)
 
     if cliente:
-        if cliente.verify_password(password) and cliente.esta_activa:
+        if not cliente.esta_activa:
+            return abort(
+                401,
+                "A sua conta não está activa, verifique a sua caixa de e-mail para activar",
+            )
+        if cliente.verify_password(password):
             return {
                 "access": create_access_token(identity=cliente.id),
                 "refresh": create_refresh_token(identity=cliente.id),
@@ -66,6 +72,47 @@ def get_cliente():
 
 def get_cliente_by_email(email: str) -> Cliente | None:
     return Cliente.query.filter_by(email=email).first()
+
+
+def renovar_subscricao(email):
+    cliente = get_cliente_by_email(email)
+
+    if cliente:
+        if not cliente.esta_activa:
+            return abort(
+                401,
+                "A sua conta não está activa, verifique a sua caixa de e-mail para activar",
+            )
+        if not cliente.subscription_status:
+            cliente.subscription_end_date = calculate_subscrption_time(1)
+            cliente.subscription_status = True
+            db.session.commit()
+
+            return str(cliente.subscription_end_date), 200
+
+        return abort(400, "A subscrição já está activa")
+
+    return abort(404, "Usuário não encontrado")
+
+
+def cancelar_subscricao(email):
+    cliente = get_cliente_by_email(email)
+
+    if cliente:
+        if not cliente.esta_activa:
+            return abort(
+                401,
+                "A sua conta não está activa, verifique a sua caixa de e-mail para activar",
+            )
+        if cliente.subscription_status:
+            cliente.subscription_status = False
+            db.session.commit()
+
+            return "Subscrição cancelada com sucesso", 200
+
+        return abort(400, "A subscrição não está activa")
+
+    return abort(404, "Usuário não encontrado")
 
 
 def activate_cliente(email: str):

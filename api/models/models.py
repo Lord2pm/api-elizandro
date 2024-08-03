@@ -18,6 +18,8 @@ class Cliente(db.Model):
     )  # Fornecedor | Cliente
     endereco = db.Column(db.String(200), nullable=True)
     esta_activa = db.Column(db.Boolean, default=False)
+    subscription_end_date = db.Column(db.DateTime, nullable=True)
+    subscription_status = db.Column(db.Boolean, default=False)
 
     vendas = db.relationship("Venda", backref="cliente", lazy=True)
     created_at = db.Column(db.DateTime, default=datetime.now())
@@ -61,6 +63,8 @@ class Fornecedor(db.Model):
     esta_activa = db.Column(db.Boolean, default=False)
     produtos = db.relationship("Produto", backref="fornecedor", lazy=True)
     vendas = db.relationship("Venda", backref="fornecedor", lazy=True)
+    subscription_end_date = db.Column(db.DateTime, nullable=True)
+    subscription_status = db.Column(db.Boolean, default=False)
 
     created_at = db.Column(db.DateTime, default=datetime.now())
     updated_at = db.Column(db.DateTime, onupdate=datetime.now())
@@ -115,3 +119,22 @@ class Venda(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.now())
     updated_at = db.Column(db.DateTime, onupdate=datetime.now())
+
+
+class Admin(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True)
+    senha = db.Column(db.Text)
+
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    updated_at = db.Column(db.DateTime, onupdate=datetime.now())
+
+    def __init__(self, email: str, senha: str) -> None:
+        self.email = email
+        self.senha = self.hash_senha(senha)
+
+    def hash_senha(self, senha):
+        return generate_password_hash(senha)
+
+    def verify_password(self, senha: str) -> bool:
+        return check_password_hash(self.senha, senha)

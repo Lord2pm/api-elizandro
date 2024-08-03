@@ -9,6 +9,10 @@ from flask_jwt_extended import (
 
 from api.utils.generate_password import generate_password
 from api.models.models import Fornecedor, db
+from api.utils.calculate_subscription_time import (
+    calculate_subscrption_time,
+    verify_subscrption_time,
+)
 
 
 def create_fornecedor(data: dict) -> Fornecedor | bool:
@@ -50,7 +54,12 @@ def fornecedor_login(data: dict) -> bool | dict:
     fornecedor = get_fornecedor_by_email(email)
 
     if fornecedor:
-        if fornecedor.verify_password(password) and fornecedor.esta_activa:
+        if not fornecedor.esta_activa:
+            return abort(
+                401,
+                "A sua conta não está activa, verifique a sua caixa de e-mail para activar",
+            )
+        if fornecedor.verify_password(password):
             return {
                 "access": create_access_token(identity=fornecedor.id),
                 "refresh": create_refresh_token(identity=fornecedor.id),
@@ -67,6 +76,47 @@ def get_fornecedor():
 
 def get_fornecedor_by_email(email: str) -> Fornecedor | None:
     return Fornecedor.query.filter_by(email=email).first()
+
+
+def renovar_subscricao(email):
+    fornecedor = get_fornecedor_by_email(email)
+
+    if fornecedor:
+        if not fornecedor.esta_activa:
+            return abort(
+                401,
+                "A sua conta não está activa, verifique a sua caixa de e-mail para activar",
+            )
+        if not fornecedor.subscription_status:
+            fornecedor.subscription_end_date = calculate_subscrption_time(1)
+            fornecedor.subscription_status = True
+            db.session.commit()
+
+            return str(fornecedor.subscription_end_date), 200
+
+        return abort(400, "A subscrição já está activa")
+
+    return abort(404, "Usuário não encontrado")
+
+
+def cancelar_subscricao(email):
+    fornecedor = get_fornecedor_by_email(email)
+
+    if fornecedor:
+        if not fornecedor.esta_activa:
+            return abort(
+                401,
+                "A sua conta não está activa, verifique a sua caixa de e-mail para activar",
+            )
+        if fornecedor.subscription_status:
+            fornecedor.subscription_status = False
+            db.session.commit()
+
+            return "Subscrição cancelada com sucesso", 200
+
+        return abort(400, "A subscrição não está activa")
+
+    return abort(404, "Usuário não encontrado")
 
 
 def activate_fornecedor(email: str):

@@ -5,11 +5,13 @@ from flask_jwt_extended import jwt_required
 from api.schemas.fornecedor_schemas import FornecedorDto
 from api.utils.send_email import email_send
 from api.services.fornecedor_services import (
+    cancelar_subscricao,
     create_fornecedor,
     fornecedor_login,
     get_fornecedor,
     fornecedor_password_recovery,
     activate_fornecedor,
+    renovar_subscricao,
 )
 
 api = FornecedorDto.api
@@ -56,8 +58,8 @@ class FornecedorLogin(Resource):
 
         if not fornecedor_tokens:
             return api.abort(
-                400,
-                "E-mail ou senha inválidos. Se já criou uma conta, verifique os dados de login ou vá para sua caixa de e-mail e active sua conta",
+                401,
+                "E-mail ou senha inválidos.",
             )
 
         return fornecedor_tokens
@@ -83,7 +85,7 @@ class PasswordRecovery(Resource):
         fornecedor, senha = fornecedor_password_recovery(data)
 
         if not fornecedor:
-            return api.abort(400, "E-mail não encontrado")
+            return api.abort(404, "E-mail não encontrado")
 
         email_send(
             f"A sua nova senha é: {senha}",
@@ -91,3 +93,17 @@ class PasswordRecovery(Resource):
             "Recuperação de senha",
         )
         return fornecedor
+
+
+@api.route("/fazer-subscricao/<user_email>")
+class FazerSubscricao(Resource):
+    @api.response(code=200, description="Subscrição feita com sucesso")
+    def put(self, user_email):
+        return renovar_subscricao(user_email)
+
+
+@api.route("/cancelar-subscricao/<user_email>")
+class CancelarSubscricao(Resource):
+    @api.response(code=200, description="Subscrição cancelada com sucesso")
+    def put(self, user_email):
+        return cancelar_subscricao(user_email)
